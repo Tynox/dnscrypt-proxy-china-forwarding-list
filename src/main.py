@@ -1,26 +1,31 @@
 #!/usr/bin/env python3
 
+from enum import Enum
 import requests
-import argparse
-
 
 # dns for china list
 DNS_RESOLVER_IPV4 = ["119.29.29.29", "223.5.5.5"]
 DNS_RESOLVER_IPV6 = ["2400:3200:baba::1"]
 
 
-# init argparse
-parser = argparse.ArgumentParser(description="Auto generate dns forwarding list for DNSCrypt-Proxy from "
-                                             "'dnsmasq-china-list' project.")
-parser.add_argument("-i6", "--ipv6", nargs="?", help="Add ipv6 dns into the forwarding list.", default=False,
-                    type=bool, dest="ipv6")
-parser.add_argument("-a", "--apple", nargs="?", default=False, type=bool, dest="apple",
-                    help="Add apple china list into the forwarding list.")
-parser.add_argument("-o", "--out", nargs="?", default="forwarding_list.txt", type=str, dest="out",
-                    help="Output file name")
+# output file type
+class OutputType(Enum):
+    IPV4_WITHOUT_APPLE = 0
+    IPV4_WITH_APPLE = 1
+    IPV6_WITHOUT_APPLE = 2
+    IPV6_WITH_APPLE = 3
 
 
-def fetch_china_list():
+# output files
+OUTPUT_FILES: {OutputType: str} = {
+    OutputType.IPV4_WITHOUT_APPLE: "forwarding_china_list",
+    OutputType.IPV4_WITH_APPLE: "forwarding_china_list_with_apple_service",
+    OutputType.IPV6_WITHOUT_APPLE: "forwarding_china_list_ipv6",
+    OutputType.IPV6_WITH_APPLE: "forwarding_china_list_with_apple_service_ipv6"
+}
+
+
+def fetch_china_list() -> str:
     url = 'https://github.com/felixonmars/dnsmasq-china-list/blob/master/accelerated-domains.china.conf?raw=true'
     r = requests.get(url)
     if r.status_code == 200:
@@ -29,7 +34,7 @@ def fetch_china_list():
         raise FileNotFoundError('Unable to open china list.')
 
 
-def fetch_apple_list():
+def fetch_apple_list() -> str:
     url = 'https://raw.githubusercontent.com/felixonmars/dnsmasq-china-list/master/apple.china.conf'
     r = requests.get(url)
     if r.status_code == 200:
@@ -38,7 +43,7 @@ def fetch_apple_list():
         raise FileNotFoundError('Unable to open apple china list')
 
 
-def parse_data(data):
+def parse_data(data) -> [str]:
     servers = data.splitlines()
     urls = []
     for server in servers:
@@ -48,7 +53,7 @@ def parse_data(data):
     return urls
 
 
-def write_to_file(file_name, urls, dns_list):
+def write_to_file(file_name: str, urls: [str], dns_list: [str]):
     with open("../" + file_name, "w") as f:
         for url in urls:
             dns = ",".join(dns_list)
@@ -57,21 +62,15 @@ def write_to_file(file_name, urls, dns_list):
 
 
 if __name__ == "__main__":
-    args = parser.parse_args()
-    should_append_ipv6_dns = args.ipv6
-    should_add_apple_china_list = args.apple
-    output_file = args.out
+    china_list = parse_data(fetch_china_list())
+    apple_list = parse_data(fetch_apple_list())
 
-    dns_servers = DNS_RESOLVER_IPV4
-    if should_append_ipv6_dns:
-        dns_servers += DNS_RESOLVER_IPV6
-
-    china_list = fetch_china_list()
-    url_list = parse_data(china_list)
-
-    if should_add_apple_china_list:
-        apple_list = fetch_apple_list()
-        apple_url_list = parse_data(apple_list)
-        url_list += apple_url_list
-
-    write_to_file(output_file, url_list, dns_servers)
+    for key, value in OUTPUT_FILES.items():
+        if key is OutputType.IPV4_WITHOUT_APPLE:
+            write_to_file(value, china_list, DNS_RESOLVER_IPV4)
+        elif key is OutputType.IPV4_WITH_APPLE:
+            write_to_file(value, china_list + apple_list, DNS_RESOLVER_IPV4)
+        elif key is OutputType.IPV6_WITHOUT_APPLE:
+            write_to_file(value, china_list, DNS_RESOLVER_IPV4 + DNS_RESOLVER_IPV6)
+        elif key is OutputType.IPV6_WITH_APPLE:
+            write_to_file(value, china_list + apple_list, DNS_RESOLVER_IPV4 + DNS_RESOLVER_IPV6)
