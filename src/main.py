@@ -10,18 +10,22 @@ DNS_RESOLVER_IPV6 = ["2400:3200:baba::1"]
 
 # output file type
 class OutputType(Enum):
-    IPV4_WITHOUT_APPLE = 0
-    IPV4_WITH_APPLE = 1
-    IPV6_WITHOUT_APPLE = 2
-    IPV6_WITH_APPLE = 3
+    DNSCRYPT_IPV4_WITHOUT_APPLE = 0
+    DNSCRYPT_IPV4_WITH_APPLE = 1
+    DNSCRYPT_IPV6_WITHOUT_APPLE = 2
+    DNSCRYPT_IPV6_WITH_APPLE = 3
+    ADGUARD_IPV4_WITHOUT_APPLE = 4
+    ADGUARD_IPV4_WITH_APPLE = 5
 
 
 # output files
 OUTPUT_FILES: {OutputType: str} = {
-    OutputType.IPV4_WITHOUT_APPLE: "forwarding_china_list",
-    OutputType.IPV4_WITH_APPLE: "forwarding_china_list_with_apple_service",
-    OutputType.IPV6_WITHOUT_APPLE: "forwarding_china_list_ipv6",
-    OutputType.IPV6_WITH_APPLE: "forwarding_china_list_with_apple_service_ipv6"
+    OutputType.DNSCRYPT_IPV4_WITHOUT_APPLE: "forwarding_china_list",
+    OutputType.DNSCRYPT_IPV4_WITH_APPLE: "forwarding_china_list_with_apple_service",
+    OutputType.DNSCRYPT_IPV6_WITHOUT_APPLE: "forwarding_china_list_ipv6",
+    OutputType.DNSCRYPT_IPV6_WITH_APPLE: "forwarding_china_list_with_apple_service_ipv6",
+    OutputType.ADGUARD_IPV4_WITHOUT_APPLE: "adguard_china_list",
+    OutputType.ADGUARD_IPV4_WITH_APPLE: "adguard_china_list_with_apple_service"
 }
 
 
@@ -53,11 +57,18 @@ def parse_data(data) -> [str]:
     return urls
 
 
-def write_to_file(file_name: str, urls: [str], dns_list: [str]):
+def write_dnscrypt_forward_config_to_file(file_name: str, urls: [str], dns_list: [str]):
     with open("../" + file_name, "w") as f:
         for url in urls:
             dns = ",".join(dns_list)
             line = "{0} {1}\n".format(url, dns)
+            f.write(line)
+
+
+def write_adguard_forward_config_to_file(file_name: str, urls: [str], dns_list: [str]):
+    with open("../" + file_name, "w") as f:
+        for url in urls:
+            line = "[/{0}/]{1}\n".format(url, dns_list[0])
             f.write(line)
 
 
@@ -66,11 +77,15 @@ if __name__ == "__main__":
     apple_list = parse_data(fetch_apple_list())
 
     for key, value in OUTPUT_FILES.items():
-        if key is OutputType.IPV4_WITHOUT_APPLE:
-            write_to_file(value, china_list, DNS_RESOLVER_IPV4)
-        elif key is OutputType.IPV4_WITH_APPLE:
-            write_to_file(value, china_list + apple_list, DNS_RESOLVER_IPV4)
-        elif key is OutputType.IPV6_WITHOUT_APPLE:
-            write_to_file(value, china_list, DNS_RESOLVER_IPV4 + DNS_RESOLVER_IPV6)
-        elif key is OutputType.IPV6_WITH_APPLE:
-            write_to_file(value, china_list + apple_list, DNS_RESOLVER_IPV4 + DNS_RESOLVER_IPV6)
+        if key is OutputType.DNSCRYPT_IPV4_WITHOUT_APPLE:
+            write_dnscrypt_forward_config_to_file(value, china_list, DNS_RESOLVER_IPV4)
+        elif key is OutputType.DNSCRYPT_IPV4_WITH_APPLE:
+            write_dnscrypt_forward_config_to_file(value, china_list + apple_list, DNS_RESOLVER_IPV4)
+        elif key is OutputType.DNSCRYPT_IPV6_WITHOUT_APPLE:
+            write_dnscrypt_forward_config_to_file(value, china_list, DNS_RESOLVER_IPV4 + DNS_RESOLVER_IPV6)
+        elif key is OutputType.DNSCRYPT_IPV6_WITH_APPLE:
+            write_dnscrypt_forward_config_to_file(value, china_list + apple_list, DNS_RESOLVER_IPV4 + DNS_RESOLVER_IPV6)
+        elif key is OutputType.ADGUARD_IPV4_WITHOUT_APPLE:
+            write_adguard_forward_config_to_file(value, china_list, DNS_RESOLVER_IPV4)
+        elif key is OutputType.ADGUARD_IPV4_WITH_APPLE:
+            write_adguard_forward_config_to_file(value, china_list + apple_list, DNS_RESOLVER_IPV4)
