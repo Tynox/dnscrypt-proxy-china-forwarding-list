@@ -1,11 +1,18 @@
 #!/usr/bin/env python3
 
 from enum import Enum
+import os
 import requests
 
 # dns for china list
 DNS_RESOLVER_IPV4 = ["119.29.29.29", "223.5.5.5"]
 DNS_RESOLVER_IPV6 = ["2400:3200:baba::1"]
+
+
+# File prefix
+FILE_PREFIX = "./"
+if os.getcwd().endswith("src"):
+    FILE_PREFIX = "../"
 
 
 # output file type
@@ -58,7 +65,7 @@ def parse_data(data) -> [str]:
 
 
 def write_dnscrypt_forward_config_to_file(file_name: str, urls: [str], dns_list: [str]):
-    with open("../" + file_name, "w") as f:
+    with open(FILE_PREFIX + file_name, "w") as f:
         for url in urls:
             dns = ",".join(dns_list)
             line = "{0} {1}\n".format(url, dns)
@@ -66,7 +73,7 @@ def write_dnscrypt_forward_config_to_file(file_name: str, urls: [str], dns_list:
 
 
 def write_adguard_forward_config_to_file(file_name: str, urls: [str], dns_list: [str]):
-    with open("../" + file_name, "w") as f:
+    with open(FILE_PREFIX + file_name, "w") as f:
         for url in urls:
             line = "[/{0}/]{1}\n".format(url, dns_list[0])
             f.write(line)
