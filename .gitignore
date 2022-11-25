@@ -130,3 +130,6 @@ dmypy.json
 
 # pycharm
 .idea/
+
+# zed pyright config
+pyrightconfig.json
