@@ -133,3 +133,11 @@ dmypy.json
 
 # zed pyright config
 pyrightconfig.json
+
+# ignore results
+adguard_china_list
+adguard_china_list_with_apple_service
+forwarding_china_list
+forwarding_china_list_ipv6
+forwarding_china_list_with_apple_service
+forwarding_china_list_with_apple_service_ipv6
