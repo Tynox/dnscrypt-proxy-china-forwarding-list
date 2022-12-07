@@ -5,7 +5,7 @@ on:
     - cron: '0 0 * * 1'
 jobs:
   update-and-release:
-    runs-on: unbuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Get current date
         run: echo "$(date +'%Y.%m.%d')" >> $CURRENT_DATE
