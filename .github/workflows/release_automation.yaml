@@ -9,7 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Get current date
-        run: echo "$(date +'%Y.%m.%d')" >> $CURRENT_DATE
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y.%m.%d')"
       - name: Checkout repo
         uses: actions/checkout@v3
         with:
@@ -27,12 +28,12 @@ jobs:
       - name: Update lists
         run: python -m src/main.py
       - name: Pack the result
-        run: tar -czvf $CURRENT_DATE.tar.gz adguard_china_list adguard_china_list_with_apple_service forwarding_china_list forwarding_china_list_ipv6 forwarding_china_list_with_apple_service forwarding_china_list_with_apple_service_ipv6
+        run: tar -czvf ${{ steps.date.outputs.date }}.tar.gz adguard_china_list adguard_china_list_with_apple_service forwarding_china_list forwarding_china_list_ipv6 forwarding_china_list_with_apple_service forwarding_china_list_with_apple_service_ipv6
       - name: Publish the release
         uses: ncipollo/release-action@v1.11.2
         env:
           CURRENT_DATE: 
         with:
-          title: $CURRENT_DATE
-          artifacts: $CURRENT_DATE.tar.gz
-          tag: $CURRENT_DATE
+          title: ${{ steps.date.outputs.date }}
+          artifacts: ${{ steps.date.outputs.date }}.tar.gz
+          tag: ${{ steps.date.outputs.date }}
