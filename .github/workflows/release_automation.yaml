@@ -1,0 +1,37 @@
+name: Release Automation
+run-name: Run the script automatically, then pack the result and release.
+on:
+  schedule:
+    - cron: '0 0 * * 1'
+  workflow_run:
+    branches:
+    - 'master'
+jobs:
+  update-and-release:
+    runs-on: unbuntu-latest
+    steps:
+      - name: Get current date
+        run: echo "$(date +'%Y.%m.%d')" >> $CURRENT_DATE
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.9"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Pack source code
+        run: tar -czvf sources.tar.gz README.md LICENSE requirements.txt ./src
+      - name: Update lists
+        run: python -m src/main.py
+      - name: Pack the result
+        run: tar -czvf $CURRENT_DATE.tar.gz adguard_china_list adguard_china_list_with_apple_service forwarding_china_list forwarding_china_list_ipv6 forwarding_china_list_with_apple_service forwarding_china_list_with_apple_service_ipv6
+      - name: Publish the release
+        uses: ncipollo/release-action@v1.11.2
+        env:
+          CURRENT_DATE: 
+        with:
+          title: $CURRENT_DATE
+          artifacts: $CURRENT_DATE.tar.gz
+          tag: $CURRENT_DATE
