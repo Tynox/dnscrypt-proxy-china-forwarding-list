@@ -3,16 +3,16 @@ run-name: Run the script automatically, then pack the result and release.
 on:
   schedule:
     - cron: '0 0 * * 1'
-  workflow_run:
-    branches:
-    - 'master'
 jobs:
   update-and-release:
     runs-on: unbuntu-latest
     steps:
       - name: Get current date
         run: echo "$(date +'%Y.%m.%d')" >> $CURRENT_DATE
-      - uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          ref: master
       - name: Set up Python 3.9
         uses: actions/setup-python@v3
         with:
