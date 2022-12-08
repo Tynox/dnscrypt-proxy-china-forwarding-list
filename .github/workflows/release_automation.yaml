@@ -25,7 +25,7 @@ jobs:
       - name: Pack source code
         run: tar -czvf sources.tar.gz README.md LICENSE requirements.txt ./src
       - name: Update lists
-        run: python -m src/main.py
+        run: python src/main.py
       - name: Pack the result
         run: tar -czvf ${{ env.CURRENT_DATE }}.tar.gz adguard_china_list adguard_china_list_with_apple_service forwarding_china_list forwarding_china_list_ipv6 forwarding_china_list_with_apple_service forwarding_china_list_with_apple_service_ipv6
       - name: Publish the release
