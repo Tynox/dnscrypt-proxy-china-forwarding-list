@@ -34,3 +34,4 @@ jobs:
           title: ${{ env.CURRENT_DATE }}
           artifacts: ${{ env.CURRENT_DATE }}.tar.gz
           tag: ${{ env.CURRENT_DATE }}
+          body: "${{ env.CURRENT_DATE }}"
