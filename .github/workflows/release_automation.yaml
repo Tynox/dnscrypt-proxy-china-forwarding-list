@@ -22,8 +22,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-      - name: Pack source code
-        run: tar -czvf sources.tar.gz README.md LICENSE requirements.txt ./src
       - name: Update lists
         run: python src/main.py
       - name: Pack the result
@@ -31,7 +29,7 @@ jobs:
       - name: Publish the release
         uses: ncipollo/release-action@v1.11.2
         with:
-          title: ${{ env.CURRENT_DATE }}
+          name: ${{ env.CURRENT_DATE }}
           artifacts: ${{ env.CURRENT_DATE }}.tar.gz
           tag: ${{ env.CURRENT_DATE }}
           body: "${{ env.CURRENT_DATE }}"
