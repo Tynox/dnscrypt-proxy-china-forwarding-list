@@ -30,8 +30,6 @@ jobs:
         run: tar -czvf ${{ env.CURRENT_DATE }}.tar.gz adguard_china_list adguard_china_list_with_apple_service forwarding_china_list forwarding_china_list_ipv6 forwarding_china_list_with_apple_service forwarding_china_list_with_apple_service_ipv6
       - name: Publish the release
         uses: ncipollo/release-action@v1.11.2
-        env:
-          CURRENT_DATE: 
         with:
           title: ${{ env.CURRENT_DATE }}
           artifacts: ${{ env.CURRENT_DATE }}.tar.gz
