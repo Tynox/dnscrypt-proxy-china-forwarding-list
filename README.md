@@ -1,3 +1,5 @@
+[[中文说明]](https://github.com/Tynox/dnscrypt-proxy-china-forwarding-list/blob/master/README_CN.md)
+
 # dnscrypt-proxy-china-forwarding-list
 Forwarding China domains (with / without apple services) dns requests to Chinese dns servers. Made for dnscrypt-proxy and adguard home.
 
@@ -20,7 +22,7 @@ China domains are from **[dnsmasq-china-list](https://github.com/felixonmars/dns
 
 ## Build
 
-`
+```
 pip3 install -r requirements.txt
 python3 src/main.py
-`
+```
