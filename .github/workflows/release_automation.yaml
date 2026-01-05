@@ -2,7 +2,7 @@ name: Release Automation
 run-name: Run the script automatically, then pack the result and release.
 on:
   schedule:
-    - cron: '0 0 * * 1'
+    - cron: '0 0 1 * *'
   workflow_dispatch:
 jobs:
   update-and-release:
@@ -11,13 +11,13 @@ jobs:
       - name: Get current date
         run: echo "CURRENT_DATE=$(date +'%Y.%m.%d')" >> $GITHUB_ENV
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
           ref: master
-      - name: Set up Python 3.9
-        uses: actions/setup-python@v4
+      - name: Set up Python 3
+        uses: actions/setup-python@v6
         with:
-          python-version: "3.9"
+          python-version: "3.13"
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -27,7 +27,7 @@ jobs:
       - name: Pack the result
         run: tar -czvf ${{ env.CURRENT_DATE }}.tar.gz adguard_china_list adguard_china_list_with_apple_service forwarding_china_list forwarding_china_list_ipv6 forwarding_china_list_with_apple_service forwarding_china_list_with_apple_service_ipv6
       - name: Publish the release
-        uses: ncipollo/release-action@v1.11.2
+        uses: ncipollo/release-action@v1
         with:
           name: ${{ env.CURRENT_DATE }}
           artifacts: ${{ env.CURRENT_DATE }}.tar.gz
